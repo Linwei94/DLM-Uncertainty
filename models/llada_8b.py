@@ -41,7 +41,7 @@ def get_num_transfer_tokens(mask_index, steps):
     return num_transfer_tokens
 
 
-@ torch.no_grad()
+@ torch.inference_mode()
 def generate(model, prompt, steps=128, gen_length=128, block_length=128, temperature=0.,
              cfg_scale=0., remasking='low_confidence', mask_id=126336):
     '''
@@ -130,7 +130,7 @@ def forward_process(batch, prompt_index, mask_id):
     return noisy_batch, (x / target_len).unsqueeze(1).repeat(1, l)
     
 
-def sample(model, prompts, repeat=1, steps=128, gen_length=128, block_length=32, temperature=0.7, cfg_scale=0., remasking='low_confidence'):
+def sample(model, prompts, repeat=1, steps=64, gen_length=128, block_length=128, temperature=0.7, cfg_scale=0., remasking='low_confidence'):
     
     device = 'cuda'
 

@@ -38,5 +38,11 @@ class PromptFormatter:
             """.strip()
             vnc_prompts = self.dataset["question"].apply(lambda x: prompt.format(question=x)).tolist()
             return vnc_prompts
+        elif prompt_type == "mmlu_0":
+            mmlu_0_prompts = self.dataset["question"]
+            return mmlu_0_prompts
+        elif prompt_type == "mmlu_5":
+            mmlu_5_prompts = self.dataset["few_shot"] + self.dataset["question"]
+            return mmlu_5_prompts
         else:
             raise NotImplementedError(f"Prompt type {self.prompt_type} not implemented.")

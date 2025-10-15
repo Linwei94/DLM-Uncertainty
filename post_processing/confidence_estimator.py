@@ -12,7 +12,8 @@ from models.model_manager import ModelManager
 
 class ConfidenceEstimator:
     
-    def __init__(self, dataset: pd.DataFrame, confidence_type: str = "vnc", self_eval_model: ModelManager = None):
+    def __init__(self, dataset_name: str, dataset: pd.DataFrame, confidence_type: str = "vnc", self_eval_model: ModelManager = None):
+        self.dataset_name = dataset_name
         self.dataset = dataset
         self.raw_responses = dataset["raw_response"].tolist()
         self.confidence_type = confidence_type
@@ -49,6 +50,9 @@ class ConfidenceEstimator:
             confidences: List of float confidence scores per question.
             selected_responses: List of selected responses per question.
         """
+        # if "mmlu" in self.dataset_name:
+        #     response_lists = [x[0].split("\n")[0][-10:] if len(x[0].split("\n")) > 1 else x[0] for x in self.raw_responses]
+        # else:
         response_lists = self.raw_responses
         entailment_model = EntailmentDeberta()
         strict_entailment: bool = False
@@ -183,7 +187,10 @@ class ConfidenceEstimator:
          False
         Output either True or False with no other text around it.
         """.strip()
-        
+
+        # if "mmlu" in self.dataset_name:
+        #     raw_responses = [x[0].split("\n")[0][-10:] if len(x[0].split("\n")) > 1 else x[0] for x in self.raw_responses]
+        # else:
         raw_responses = [x[0] for x in self.raw_responses]
         prompts = [P_TRUE_SELF_EVALUATION_PROMPT.format(question=q, proposed_answer=r) for q,r in zip(self.dataset["question"], raw_responses)]
         eval_list, _, _ = self.self_eval_model.sample(prompts=prompts, repeat=10)

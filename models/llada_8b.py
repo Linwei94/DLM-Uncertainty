@@ -130,16 +130,18 @@ def forward_process(batch, prompt_index, mask_id):
     return noisy_batch, (x / target_len).unsqueeze(1).repeat(1, l)
     
 
-def sample(model, prompts, repeat=1, steps=64, gen_length=128, block_length=128, temperature=0.7, cfg_scale=0., remasking='low_confidence'):
+def sample(model, prompts, repeat=1, steps=3, gen_length=3, block_length=3, temperature=0.1, cfg_scale=0., remasking='low_confidence'):
     
-    device = 'cuda'
+    # device = 'cuda'
 
     # Load model and tokenizer
     model = AutoModel.from_pretrained(
         'GSAI-ML/LLaDA-8B-Instruct', 
         trust_remote_code=True, 
-        torch_dtype=torch.bfloat16
-    ).to(device).eval()
+        torch_dtype=torch.bfloat16,
+        low_cpu_mem_usage=True,
+        device_map="auto"
+    ).eval()
 
     tokenizer = AutoTokenizer.from_pretrained(
         'GSAI-ML/LLaDA-8B-Instruct', 
@@ -152,15 +154,20 @@ def sample(model, prompts, repeat=1, steps=64, gen_length=128, block_length=128,
         prompt = tokenizer.apply_chat_template(m, add_generation_prompt=True, tokenize=False)
 
         input_ids = tokenizer(prompt)['input_ids']
-        input_ids = torch.tensor(input_ids).to(device).unsqueeze(0)
+        input_ids = torch.tensor(input_ids).unsqueeze(0)
 
         # tried some higher temperatures and cfg_scales. They result in very weird outputs, mixing Chinese and English with wrong JSON format.
         prompt_outputs = []
         for _ in range(repeat):
-            out = generate(model, input_ids, steps=steps, gen_length=gen_length, block_length=block_length, temperature=temperature, cfg_scale=cfg_scale, remasking=remasking)
+            with torch.inference_mode():
+                out = generate(model, input_ids, steps=steps, gen_length=gen_length, block_length=block_length, temperature=temperature, cfg_scale=cfg_scale, remasking=remasking)
+            out = out.cpu()
             response = tokenizer.batch_decode(out[:, input_ids.shape[1]:], skip_special_tokens=True)[0]
             prompt_outputs.append(response)
-            
+            torch.cuda.empty_cache()
+
         outputs.append(prompt_outputs)
+        del out
+        torch.cuda.empty_cache()    
 
     return outputs, [[]] * len(prompts), [[]] * len(prompts)

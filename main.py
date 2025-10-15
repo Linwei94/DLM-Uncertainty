@@ -26,7 +26,6 @@ def parse_args():
         "--dataset",
         type=str,
         required=True,
-        choices=["truthful_qa", "truthful_qa_mini"],
         help="Path or name of the dataset to use"
     )
 
@@ -34,7 +33,6 @@ def parse_args():
         "--prompt",
         type=str,
         required=True,
-        choices=["vanilla", "vanilla_uncertainty", "vnc"],
         help="Prompt or instruction text"
     )
 
@@ -95,7 +93,7 @@ if __name__ == "__main__":
     else: 
         import torch
         torch.cuda.empty_cache()
-        estimator = ConfidenceEstimator(dataset=dataset, confidence_type=conf, self_eval_model=qa_model)
+        estimator = ConfidenceEstimator(dataset_name=dataset_name, dataset=dataset, confidence_type=conf, self_eval_model=qa_model)
         dataset["response"] = estimator.responses
         dataset["confidence"] = estimator.confidence_scores
         dataset.to_csv(extracted_response_path, index=False)

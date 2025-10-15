@@ -76,7 +76,7 @@ if __name__ == "__main__":
         })
         print("Skipping sampling, raw responses already exist.")
     else: 
-        raw_responses, all_tokens, all_logprobs = qa_model.sample(prompts=prompts, repeat=repeat)
+        raw_responses, all_tokens, all_logprobs = qa_model.sample(prompts=prompts, repeat=repeat, temperature=0.1)
         dataset["raw_response"] = raw_responses
         dataset["tokens"] = all_tokens
         dataset["logprobs"] = all_logprobs

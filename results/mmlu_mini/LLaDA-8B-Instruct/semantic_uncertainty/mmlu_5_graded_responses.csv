@@ -228,7 +228,7 @@ C. pectoralis minor
 D. quadratus lumborum
 Answer: C
 
-",A,"['D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'B']",[],[],D,0.9,B
+",A,"['D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D']",[],[],D,1.0,B
 "Question: At what angle to the horizontal should an ideal projectile be launched so that its horizontal displacement (the range) is equal to its maximum vertical displacement?
 A. sin–1 (1/g)
 B. cos–1 (1/g)
@@ -272,7 +272,7 @@ C. 22.5 J
 D. 40 J
 Answer: B
 
-",D,"['D', 'D', 'D', 'D', 'C', 'C', 'D', 'D', 'C', 'D']",[],[],D,0.5,A
+",D,"['D', 'D', 'D', 'D', 'D', 'C', 'C', 'D', 'D', 'D']",[],[],D,0.5,A
 "Question: Poliovirus can most easily become more virulent by which of the following processes?
 A. Mutation of the RNA genome at only a few positions
 B. Recombining with another enterovirus
@@ -913,7 +913,7 @@ C. Not wrong, Wrong
 D. Not wrong, Not wrong
 Answer: A
 
-",B,"['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A']",[],[],A,1.0,B
+",B,"['A', 'A', 'A', 'A', 'C', 'A', 'A', 'A', 'A', 'A']",[],[],A,0.5,B
 "Question: High entropy means that the partitions in classification are
 A. pure
 B. not pure
@@ -1414,7 +1414,7 @@ C. (5 x 5) + (5 x 9)
 D. (5 x 9) x (6 x 9)
 Answer: B
 
-",B,"['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'D', 'D']",[],[],B,0.8,A
+",B,"['B', 'B', 'B', 'B', 'D', 'D', 'B', 'B', 'D', 'B']",[],[],B,0.5,A
 "Question: The origins of Chinese civilization can be traced to:
 A. the site of An-yang near the Huang ho River.
 B. chiefdoms and states in numerous regions throughout China.
@@ -1461,7 +1461,7 @@ C. just under 1000 cc
 D. 1200 cc
 Answer: C
 
-",B,"['A', 'A', 'B', 'A', 'A', 'A', 'A', 'A', 'A', 'A']",[],[],A,0.7,B
+",B,"['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A']",[],[],A,1.0,B
 "Question: Which of these is another name for a golf course?
 A. Pitch
 B. Links
@@ -1550,7 +1550,7 @@ C. Not wrong, Wrong
 D. Not wrong, Not wrong
 Answer: A
 
-",C,"['A', 'C', 'C', 'A', 'A', 'C', 'A', 'C', 'C', 'A']",[],[],C,0.6,A
+",C,"['C', 'C', 'C', 'A', 'C', 'C', 'C', 'A', 'C', 'C']",[],[],C,0.5,A
 "Question: You notice a lesion on the labial alveolar mucosa of the lower right lateral incisor tooth of one of your patients and decide to take a biopsy to send for oral pathology report Which nerve would require local anaesthesia in order to carry out a pain-free biopsy?
 A. The incisive nerve
 B. The mental nerve
@@ -1595,7 +1595,7 @@ C. Pleural
 D. Spinal
 Answer: B
 
-",B,"['C', 'D', 'C', 'C', 'C', 'C', 'C', 'D', 'D', 'C']",[],[],C,0.5,B
+",B,"['D', 'C', 'D', 'C', 'C', 'C', 'C', 'D', 'C', 'C']",[],[],C,0.5,B
 "Question: At birth, the least developed part of the brain is the
 A. visual system
 B. cortex
@@ -1690,7 +1690,7 @@ C. III, I
 D. III, II
 Answer: D
 
-",D,"['D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D']",[],[],D,1.0,A
+",D,"['D', 'D', 'D', 'D', 'A', 'D', 'D', 'D', 'D', 'D']",[],[],D,0.5,A
 "Question: Baier argues that genuine moral rules:
 A. must be for the good of human beings.
 B. make take into account the interests of all sentient beings.
@@ -1828,7 +1828,7 @@ C. Rights and obligations
 D. Presentation and disclosure
 Answer: B
 
-",C,"['C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'D', 'C']",[],[],C,0.8,A
+",C,"['C', 'C', 'C', 'C', 'C', 'D', 'C', 'C', 'C', 'C']",[],[],C,0.6,A
 "Question: The case study of Phineas Gage's brain injury was significant for which of the following reasons?
 A. Gage's accident was one of the first to be treated with drugs that alter the neurotransmitters in the brain.
 B. It was one of the first well-documented examples of a specific brain area being associated with a set of physical and emotional changes.
@@ -2120,7 +2120,7 @@ C. Not wrong, Wrong
 D. Not wrong, Not wrong
 Answer: A
 
-",D,"['B', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C']",[],[],C,0.8,B
+",D,"['C', 'C', 'A', 'C', 'C', 'C', 'C', 'C', 'C', 'C']",[],[],C,0.7,B
 "Question: A person who is actively rejecting the dominant culture and holds rigid, positive beliefs about the minority culture is most likely in what stage of racial/cultural identity development according to Atkinson, Morten, and Sue?
 A. Conformity
 B. Dissonance
@@ -2694,7 +2694,7 @@ C. Lower taxes on research and development of new technology
 D. Higher taxes on household income
 Answer: C
 
-",D,"['C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C']",[],[],C,1.0,B
+",D,"['C', 'A', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C']",[],[],C,0.8,B
 "Question: Lowest critical frequency is due to zero and it may be present at the origin or nearer to the origin, then the type of network is
 A. LC circuit.
 B. RC circuit.
@@ -2966,7 +2966,7 @@ C. Lower taxes on research and development of new technology
 D. Higher taxes on household income
 Answer: C
 
-",B,"['A', 'A', 'A', 'A', 'A', 'A', 'C', 'C', 'A', 'A']",[],[],A,0.7,B
+",B,"['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A']",[],[],A,1.0,B
 "Question: Which of the following best explains why enzymes are effective in facilitating chemical reactions?
 A. They raise the temperature of the reaction mixture, thereby speeding up the conversion of reactants to products.
 B. They alter the equilibrium constant of a reaction (K_eq) so that more reactant can be converted to product.
@@ -3104,7 +3104,7 @@ C. the wrongness of torture.
 D. the readiness on the part of many intelligent people to see torture as the best solution to deal with terrorism.
 Answer: D
 
-",D,"['B', 'B', 'B', 'B', 'B', 'B', 'B', 'A', 'B', 'B']",[],[],B,0.8,B
+",D,"['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B']",[],[],B,1.0,B
 "Question: For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I backed the truck up into the lake. Scenario 2 | During gun practice I shot a hole in the strawman's ear.
 A. Wrong, Wrong
 B. Wrong, Not wrong
@@ -3421,7 +3421,7 @@ C. pectoralis minor
 D. quadratus lumborum
 Answer: C
 
-",A,"['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A']",[],[],A,1.0,A
+",A,"['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'D']",[],[],A,0.9,A
 "Question: A 38-year-old person is afraid to travel on public transportation. A program of treatment that relies on graduated exposure to traveling by bus, with actual real-life behavioral activities increased across trials, is called
 A. flooding
 B. modeling
@@ -3554,7 +3554,7 @@ C. Not wrong, Wrong
 D. Not wrong, Not wrong
 Answer: A
 
-",D,"['D', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'A', 'C']",[],[],C,0.7,B
+",D,"['C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C']",[],[],C,1.0,B
 "Question: The government promotes preferential treatment for members of groups that have historically suffered from discrimination by means of
 A. the New Federalism
 B. affirmative action programs
@@ -3786,7 +3786,7 @@ C. are highly intercorrelated with each other and moderately correlated with the
 D. have low correlations with the criterion bur are moderately correlated with each other
 Answer: A
 
-",A,"['B', 'B', 'B', 'A', 'B', 'B', 'C', 'B', 'C', 'B']",[],[],B,0.5,B
+",A,"['B', 'B', 'B', 'C', 'B', 'B', 'B', 'B', 'A', 'B']",[],[],B,0.5,B
 "Question: Older adults are most likely to be involved in a traffic accident when they are
 A. On foot
 B. Driving in a new location
@@ -4193,7 +4193,7 @@ C. 62
 D. 65
 Answer: D
 
-",C,"['C', 'B', 'C', 'B', 'C', 'C', 'D', 'B', 'C', 'C']",[],[],B,0.4,B
+",C,"['B', 'B', 'B', 'B', 'C', 'C', 'C', 'D', 'B', 'D']",[],[],B,0.5,B
 "Question: Which factor in the last quarter century greatly destabilized Eastern Europe and led to ethnic conflict?
 A. The introduction of new languages
 B. The end of the Cold War
@@ -4283,7 +4283,7 @@ C. It would probably result in a decision tree that scores well on the training 
 D. It would probably result in a decision tree that scores well on a testset but badly on a training set.
 Answer: C
 
-",C,"['D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D']",[],[],D,1.0,B
+",C,"['D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'C']",[],[],D,0.9,B
 "Question: A big fish swims upon and swallows a small fish that is at rest. Right after lunch, the fattened big fish has a change in
 A. speed
 B. momentum
@@ -4327,7 +4327,7 @@ C. Uranium
 D. Same in each
 Answer: A
 
-",A,"['B', 'C', 'B', 'B', 'B', 'B', 'B', 'B', 'C', 'C']",[],[],B,0.7,B
+",A,"['B', 'B', 'B', 'B', 'B', 'C', 'C', 'B', 'C', 'C']",[],[],B,0.6,B
 "Question: Buffy and Willow were discussing their sexual fantasies. Buffy revealed that she sometimes fantasizes about sex with other women even though she normally finds herself attracted to men. She also fantasizes about group sex. Which of the following statements can be inferred from Buffy's fantasies?
 A. Buffy's fantasies suggest that she must be a latent homosexual or bisexual.
 B. Buffy's fantasies are indicative of a paraphilia.
@@ -4691,4 +4691,4 @@ C. Not wrong, Wrong
 D. Not wrong, Not wrong
 Answer: A
 
-",C,"['C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'D']",[],[],C,0.9,A
+",C,"['C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C']",[],[],C,1.0,A

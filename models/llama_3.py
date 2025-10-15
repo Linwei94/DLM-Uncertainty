@@ -1,7 +1,7 @@
 from vllm import LLM, SamplingParams
 from tqdm import tqdm  # optional progress bar
 
-def sample(model_id, prompts, repeat=1, max_tokens=5, show_progress=True):
+def sample(model_id, prompts, repeat=1, max_tokens=5, temperature=0, show_progress=True):
     """
     Samples text from an LLM multiple times and groups outputs by prompt.
     
@@ -18,7 +18,7 @@ def sample(model_id, prompts, repeat=1, max_tokens=5, show_progress=True):
         all_logprobs (List[List[List[float]]]): logprobs[prompt_idx][round_idx][token_idx]
     """
     llm = LLM(model=model_id, max_model_len=4096)
-    sampling_params = SamplingParams(max_tokens=max_tokens, logprobs=1, temperature=0.1)
+    sampling_params = SamplingParams(max_tokens=max_tokens, logprobs=1, temperature=temperature)
 
     n_prompts = len(prompts)
     all_responses = [[] for _ in range(n_prompts)]

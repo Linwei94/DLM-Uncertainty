@@ -193,7 +193,7 @@ class ConfidenceEstimator:
         # else:
         raw_responses = [x[0] for x in self.raw_responses]
         prompts = [P_TRUE_SELF_EVALUATION_PROMPT.format(question=q, proposed_answer=r) for q,r in zip(self.dataset["question"], raw_responses)]
-        eval_list, _, _ = self.self_eval_model.sample(prompts=prompts, repeat=10)
+        eval_list, _, _ = self.self_eval_model.sample(prompts=prompts, repeat=10, temperature=1)
         confidences = []
         for self_evals in eval_list:
             true_count = sum("true" in str(x).lower() for x in self_evals)

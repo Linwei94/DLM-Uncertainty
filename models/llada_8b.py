@@ -138,7 +138,7 @@ def forward_process(batch, prompt_index, mask_id):
     return noisy_batch, (x / target_len).unsqueeze(1).repeat(1, l)
     
 
-def sample(model, prompts, repeat=1, steps=3, gen_length=3, block_length=3, temperature=0., cfg_scale=0., remasking='low_confidence'):
+def sample(model, prompts, repeat=1, steps=10, gen_length=10, block_length=10, temperature=0., cfg_scale=0., remasking='low_confidence'):
     
     # device = 'cuda'
 
@@ -288,7 +288,6 @@ def sample_4_choices(model, prompts, repeat=1, steps=3, gen_length=3, block_leng
                             break
                     break
                 try:
-                    print(temp_map[opt])
                     per_prompt_logprobs.append(float(np.log(temp_map[opt] / sum(temp_map.values()))))
                 except:
                     per_prompt_logprobs.append(None)
@@ -303,3 +302,87 @@ def sample_4_choices(model, prompts, repeat=1, steps=3, gen_length=3, block_leng
         torch.cuda.empty_cache()
 
     return outputs, all_tokens, all_logprobs
+
+
+def p_true_eval(model, prompts, repeat=1, steps=3, gen_length=3, block_length=3, temperature=0., cfg_scale=0., remasking='low_confidence'):
+
+    # Load model and tokenizer
+    model = AutoModel.from_pretrained(
+        'GSAI-ML/LLaDA-8B-Instruct', 
+        trust_remote_code=True, 
+        torch_dtype=torch.bfloat16,
+        low_cpu_mem_usage=True,
+        device_map="auto"
+    ).eval()
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        'GSAI-ML/LLaDA-8B-Instruct', 
+        trust_remote_code=True
+    )
+
+    # Define True/False token variants
+    tf_variants = {
+        True: ["True", "true", "ĠTrue", "Ġtrue", "Yes", "yes", "ĠYes", "Ġyes"],
+        False: ["False", "false", "ĠFalse", "Ġfalse", "No", "no", "ĠNo", "Ġno"]
+    }
+
+    confs = []
+
+    for prompt in tqdm(prompts, desc="Processing prompts"):
+        m = [{"role": "user", "content": prompt}]
+        prompt_text = tokenizer.apply_chat_template(m, add_generation_prompt=True, tokenize=False)
+
+        input_ids = tokenizer(prompt_text)['input_ids']
+        input_ids = torch.tensor(input_ids).unsqueeze(0)
+
+        temp_map = {key: 0 for key in tf_variants.keys()}
+
+        with torch.inference_mode():
+            out, conf, top_k_ids, top_k_probs = generate(
+                model, input_ids,
+                steps=steps, gen_length=gen_length, block_length=block_length,
+                temperature=temperature, cfg_scale=cfg_scale, remasking=remasking
+            )
+
+            # ---- Token postprocessing ----
+            out = out.cpu()
+            special_token_ids = set(tokenizer.all_special_ids)
+            out_ids = out[:, input_ids.shape[1]:].cpu().numpy()
+            conf_np = conf.detach().to(torch.float32).cpu().numpy()[:, input_ids.shape[1]:]
+            valid_mask = np.isfinite(conf_np) & ~np.isin(out_ids, list(special_token_ids))
+            filtered_conf = conf_np[valid_mask]
+
+            response = tokenizer.batch_decode(out[:, input_ids.shape[1]:], skip_special_tokens=True)[0]
+            tokens = tokenizer.convert_ids_to_tokens(out[0, input_ids.shape[1]:].tolist(), skip_special_tokens=True)
+            top_k_ids = top_k_ids[:, input_ids.shape[1]:]
+            top_k_probs = top_k_probs[:, input_ids.shape[1]:]
+
+
+            # ---- True/False probability collection ----
+            batch_idx = 0
+            generated_ids = out[0, input_ids.shape[1]:]
+            generated_tokens = tokenizer.convert_ids_to_tokens(generated_ids.tolist())
+            
+            for pos, token in enumerate(generated_tokens):
+                for tf_key, variants in tf_variants.items():
+                    if token in variants:
+                        tk_ids = top_k_ids[batch_idx, pos]
+                        tk_probs = top_k_probs[batch_idx, pos]
+                        tk_tokens = tokenizer.convert_ids_to_tokens(tk_ids.tolist())
+                        
+                        for sub_tf, sub_variants in tf_variants.items():
+                            for variant in sub_variants:
+                                if variant in tk_tokens:
+                                    idx = tk_tokens.index(variant)
+                                    prob = tk_probs[idx].item()
+                                    temp_map[sub_tf] += prob
+                        break
+                break
+
+            try:
+                p_true = temp_map[True] / sum(temp_map.values())
+                confs.append(p_true)
+            except:
+                confs.append(None)
+
+    return confs

@@ -44,5 +44,20 @@ class PromptFormatter:
         elif prompt_type == "mmlu_5":
             mmlu_5_prompts = self.dataset["few_shot"] + self.dataset["question"]
             return mmlu_5_prompts
+        elif prompt_type == "mmlu_vnc":
+            mmlu_vnc = """
+            Read the question, provide your answer and your confidence in this
+            answer. Note: The confidence indicates how likely you think your
+            answer is true.
+            Use the following format to answer:
+
+            “Answer and Confidence (0-100): [ONLY the option letter; not a complete sentence], [Your confidence level, please only include the numerical number in the range of 0-100]%”
+
+            Only the answer and confidence, don't give me the explanation.
+            Question:[{question}]
+            Now, please answer this question and provide your confidence level.
+
+            """
+            return [mmlu_vnc.format(question=q) for q in self.dataset["question"]]
         else:
             raise NotImplementedError(f"Prompt type {self.prompt_type} not implemented.")

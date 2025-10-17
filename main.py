@@ -2,6 +2,7 @@ import argparse
 import pandas as pd
 import os
 import ast
+import time
 
 from pre_processing.dataset_fetcher import DatasetFetcher
 from pre_processing.prompt_fomatter import PromptFormatter
@@ -58,6 +59,7 @@ if __name__ == "__main__":
     prompts = PromptFormatter(dataset, prompt_type=prompt).prompts
 
     repeat = 10 if conf == "semantic_uncertainty" else 1  # repeat 10 times for sentence uncertainty
+    temperature = 1 if conf == "semantic_uncertainty" else 0  
 
     raw_response_path = f"cache/{dataset_name}/{model}/{conf}/{prompt}_raw_responses.csv"
     extracted_response_path = f"cache/{dataset_name}/{model}/{conf}/{prompt}_extracted_responses.csv"
@@ -76,14 +78,16 @@ if __name__ == "__main__":
         })
         print("Skipping sampling, raw responses already exist.")
     else: 
-        if "mmlu" in dataset_name and "llada" in model.lower() and conf == "token_probs":
-            raw_responses, all_tokens, all_logprobs = llada_8b.sample_4_choices(model=model, prompts=prompts, repeat=repeat)
+        if "mmlu" in dataset_name.lower() and "vnc" not in conf.lower():
+            raw_responses, all_tokens, all_logprobs = qa_model.sample_4_choices(prompts=prompts, repeat=repeat, temperature=temperature)
         else:
-            raw_responses, all_tokens, all_logprobs = qa_model.sample(prompts=prompts, repeat=repeat, temperature=0.1)
+            raw_responses, all_tokens, all_logprobs = qa_model.sample(prompts=prompts, repeat=repeat, temperature=temperature)
         dataset["raw_response"] = raw_responses
         dataset["tokens"] = all_tokens
         dataset["logprobs"] = all_logprobs
         dataset.to_csv(raw_response_path, index=False)
+    
+    time.sleep(10)
 
     # confidence
     if os.path.exists(extracted_response_path):
@@ -101,6 +105,8 @@ if __name__ == "__main__":
         dataset["confidence"] = estimator.confidence_scores
         dataset.to_csv(extracted_response_path, index=False)
 
+    time.sleep(10)
+
     # grading
     if os.path.exists(results_response_path):
         dataset = pd.read_csv(results_response_path, converters={
@@ -115,6 +121,8 @@ if __name__ == "__main__":
         grader = Grader(dataset=dataset)
         dataset["grade"] = grader.grades
         dataset.to_csv(results_response_path, index=False)
+
+    time.sleep(10)
 
     # results
     metrics = Metrics(grades=dataset["grade"].tolist(), confidence_scores=dataset["confidence"].tolist())

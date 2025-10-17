@@ -33,7 +33,7 @@ class ConfidenceEstimator:
         elif self.confidence_type == "linguistic_confidecne":
             self.linguistic_confidence()
         elif self.confidence_type == "p_true":
-            self.p_true_monte_carlo()
+            self.p_true_token_probs()
         else:
             raise NotImplementedError(f"Confidence type {self.confidence_type} not implemented.")
 
@@ -132,11 +132,11 @@ class ConfidenceEstimator:
         prompts = []
         for text in self.raw_responses:
             prompt = f"""
-            You are a strict information extractor. Extract ONLY what is contained in the given text,
+            You are a strict information extractor. The text is an answer followed by a confidence socre. Extract ONLY what is contained in the given text,
             without using any outside knowledge. Return a valid JSON object strictly in this format:
 
             {{
-                "answer": "<the answer extracted from the text, or null if none>",
+                "answer": "<the answer extracted from the text, or null if none. It is a single letter if it is a multiple choice question.>",
                 "confidence_score": <a number between 0 and 100 estimating confidence, verbalised in the text. None if not present.>
             }}
 
@@ -202,6 +202,27 @@ class ConfidenceEstimator:
                 confidences.append(true_count / (true_count + false_count))
             else:
                 confidences.append(float("nan"))
+        self.confidence_scores = confidences
+        self.responses = raw_responses
+
+
+    def p_true_token_probs(self):
+        # preprare self eval prompt
+        P_TRUE_SELF_EVALUATION_PROMPT = """
+        Question: {question}
+        Proposed Answer: {proposed_answer}
+        Is the proposed answer:
+         True
+         False
+        Output either True or False with no other text around it.
+        """.strip()
+
+        # if "mmlu" in self.dataset_name:
+        #     raw_responses = [x[0].split("\n")[0][-10:] if len(x[0].split("\n")) > 1 else x[0] for x in self.raw_responses]
+        # else:
+        raw_responses = [x[0] for x in self.raw_responses]
+        prompts = [P_TRUE_SELF_EVALUATION_PROMPT.format(question=q, proposed_answer=r) for q,r in zip(self.dataset["question"], raw_responses)]
+        confidences = self.self_eval_model.p_true_eval(prompts=prompts, temperature=0)
         self.confidence_scores = confidences
         self.responses = raw_responses
 

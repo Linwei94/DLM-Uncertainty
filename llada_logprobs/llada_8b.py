@@ -271,6 +271,7 @@ def sample_4_choices(model, prompts, repeat=1, steps=3, gen_length=3, block_leng
                 batch_idx = 0
                 generated_ids = out[0, input_ids.shape[1]:]
                 generated_tokens = tokenizer.convert_ids_to_tokens(generated_ids.tolist())
+                print(generated_tokens)
                 for pos, token in enumerate(generated_tokens):
                     # if current token is A/B/C/D
                     for opt, variants in option_variants.items():
@@ -284,11 +285,10 @@ def sample_4_choices(model, prompts, repeat=1, steps=3, gen_length=3, block_leng
                                     if variant in tk_tokens:
                                         idx = tk_tokens.index(variant)
                                         prob = tk_probs[idx].item()
-                                        temp_map[sub_opt] += prob
+                                        temp_map[sub_opt] += (prob)
                             break
                     break
                 try:
-                    print(temp_map[opt])
                     per_prompt_logprobs.append(float(np.log(temp_map[opt] / sum(temp_map.values()))))
                 except:
                     per_prompt_logprobs.append(None)
@@ -303,3 +303,8 @@ def sample_4_choices(model, prompts, repeat=1, steps=3, gen_length=3, block_leng
         torch.cuda.empty_cache()
 
     return outputs, all_tokens, all_logprobs
+
+
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+print(sample_4_choices("GSAI-ML/LLaDA-8B-Instruct", ["Which city is in Canada? A. New York B. Toronto C. Wagga Wagga D. Brunswick Return your answer letter only."], remasking="low_confidence", repeat=1)) 

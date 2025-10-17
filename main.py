@@ -10,7 +10,7 @@ from post_processing.confidence_estimator import ConfidenceEstimator
 from post_processing.grader import Grader
 from post_processing.metrics import Metrics
 
-from models.model_manager import ModelManager
+from models.model_manager import ModelManager, llada_8b
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Example script using dataset, prompt, and conf arguments")
@@ -76,7 +76,10 @@ if __name__ == "__main__":
         })
         print("Skipping sampling, raw responses already exist.")
     else: 
-        raw_responses, all_tokens, all_logprobs = qa_model.sample(prompts=prompts, repeat=repeat, temperature=0.1)
+        if "mmlu" in dataset_name and "llada" in model.lower() and conf == "token_probs":
+            raw_responses, all_tokens, all_logprobs = llada_8b.sample_4_choices(model=model, prompts=prompts, repeat=repeat)
+        else:
+            raw_responses, all_tokens, all_logprobs = qa_model.sample(prompts=prompts, repeat=repeat, temperature=0.1)
         dataset["raw_response"] = raw_responses
         dataset["tokens"] = all_tokens
         dataset["logprobs"] = all_logprobs

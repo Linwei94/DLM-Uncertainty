@@ -1,0 +1,2 @@
+accuracy_including_C,accuracy_excluding_C,roc_auc_including_C,roc_auc_excluding_C,ECE_including_C,ECE_excluding_C,n_samples
+0.6521739130434783,0.6521739130434783,0.5370370370370371,0.5370370370370371,0.1775362318840578,0.1775362318840578,69

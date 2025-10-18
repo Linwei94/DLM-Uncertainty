@@ -112,7 +112,12 @@ class ConfidenceEstimator:
 
 
     def token_probs_estimator(self):
-        self.confidence_scores = [float(np.exp(np.nanmean(x))) for x in self.dataset["logprobs"].values]
+        self.confidence_scores = []
+        for x in self.dataset["logprobs"].values:
+            try:
+                self.confidence_scores.append(float(np.exp(np.nanmean(x))))
+            except:
+                self.confidence_scores.append(np.nan)
 
     
     def linguistic_confidence(self):

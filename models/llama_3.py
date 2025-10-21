@@ -2,7 +2,7 @@ from vllm import LLM, SamplingParams
 from tqdm import tqdm  # optional progress bar
 import numpy as np
 
-def sample(model_id, prompts, repeat=1, max_tokens=64, temperature=0, show_progress=True):
+def sample(model_id, prompts, repeat=1, max_tokens=1024, temperature=0, show_progress=True):
     llm = LLM(model=model_id, max_model_len=4096)
     sampling_params = SamplingParams(max_tokens=max_tokens, logprobs=1, temperature=temperature)
 

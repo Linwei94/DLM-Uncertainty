@@ -136,18 +136,31 @@ class ConfidenceEstimator:
 
         prompts = []
         for text in self.raw_responses:
-            prompt = f"""
-            You are a strict information extractor. The text is an answer followed by a confidence socre. Extract ONLY what is contained in the given text,
-            without using any outside knowledge. Return a valid JSON object strictly in this format:
+            if "mmlu" in self.dataset_name:
+                prompt = f"""
+                You are a strict information extractor. The text is an answer followed by a confidence socre. Extract ONLY what is contained in the given text,
+                without using any outside knowledge. Return a valid JSON object strictly in this format:
 
-            {{
-                "answer": "<the answer extracted from the text, or null if none. It is a single letter if it is a multiple choice question.>",
-                "confidence_score": <a number between 0 and 100 estimating confidence, verbalised in the text. None if not present.>
-            }}
+                {{
+                    "answer": "<the answer extracted from the text, or null if none. It is a single letter if it is a multiple choice question.>",
+                    "confidence_score": <a number between 0 and 100 estimating confidence, verbalised in the text. None if not present.>
+                }}
 
-            Text:
-            {text}
-            """
+                Text:
+                {text}
+                """
+            else:
+                prompt = f"""
+                You are a strict information extractor. The text is an answer followed by a confidence socre. Extract ONLY what is contained in the given text,
+                without using any outside knowledge. Return a valid JSON object strictly in this format:
+                {{
+                    "answer": "<the answer extracted from the text, or null if none.>",
+                    "confidence_score": <a number between 0 and 100 estimating confidence, verbalised in the text. None if not present.>
+                }}
+
+                Text:
+                {text}
+                """
             prompts.append([{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": prompt.strip()}])
 
         # Run generation

@@ -84,3 +84,4 @@ class Metrics:
             "n_samples": len(self.grades)
         }
         pd.DataFrame(results, index=[0]).to_csv(path, index=False)
+        return pd.DataFrame(results, index=[0])

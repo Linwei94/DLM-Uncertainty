@@ -1,4 +1,4 @@
-from . import llada_8b, llama_3
+from . import llada_8b, llama_3, dream_7b
 from configs import *
 
 class ModelManager():
@@ -26,6 +26,10 @@ class ModelManager():
             self.model_id = f"GSAI-ML/{self.model_name}"
             return llada_8b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
         
+        elif self.model_name == "Dream-v0-Instruct-7B":
+            self.model_id = f"Dream-org/{self.model_name}"
+            return dream_7b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length)
+        
         else:
             raise NotImplementedError(f"Model {self.model_name} not implemented.")
         
@@ -47,6 +51,10 @@ class ModelManager():
             self.model_id = f"GSAI-ML/{self.model_name}"
             return llada_8b.sample_4_choices(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
         
+        elif self.model_name == "Dream-v0-Instruct-7B":
+            self.model_id = f"Dream-org/{self.model_name}"
+            return dream_7b.sample_4_choices(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length)
+        
         else:
             raise NotImplementedError(f"Model {self.model_name} not implemented.")
         
@@ -67,6 +75,10 @@ class ModelManager():
         elif self.model_name == "LLaDA-8B-Instruct":
             self.model_id = f"GSAI-ML/{self.model_name}"
             return llada_8b.p_true_eval(model=self.model_id, prompts=prompts, temperature=temperature)
+        
+        elif self.model_name == "Dream-v0-Instruct-7B":
+            self.model_id = f"Dream-org/{self.model_name}"
+            return dream_7b.sample_4_choices(model=self.model_id, prompts=prompts, temperature=temperature)
         
         else:
             raise NotImplementedError(f"Model {self.model_name} not implemented.")

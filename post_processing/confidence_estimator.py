@@ -20,6 +20,7 @@ class ConfidenceEstimator:
         self.responses: list[str] = dataset["raw_response"].tolist()
         self.confidence_scores: list[float] = []
         self.self_eval_model: ModelManager = self_eval_model
+        self.p_true_eval_raw_responses = []
         self.estimate_confidence()
 
 

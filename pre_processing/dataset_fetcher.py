@@ -132,7 +132,8 @@ class DatasetFetcher:
                     f"A. {choices[0].strip()}\n"
                     f"B. {choices[1].strip()}\n"
                     f"C. {choices[2].strip()}\n"
-                    f"D. {choices[3].strip()}"
+                    f"D. {choices[3].strip()}\n"
+                    f"Answer: [Return Your Answer Letter ONLY]\n"
                 )
 
                 # Append to lists
@@ -170,7 +171,8 @@ class DatasetFetcher:
                     f"A. {choices[0].strip()}\n"
                     f"B. {choices[1].strip()}\n"
                     f"C. {choices[2].strip()}\n"
-                    f"D. {choices[3].strip()}"
+                    f"D. {choices[3].strip()}\n"
+                    f"Answer: [Return Your Answer Letter ONLY]\n"
                 )
 
                 # Append to lists
@@ -184,15 +186,21 @@ class DatasetFetcher:
         # GSM8K
         # ------------------------------------------------------------------------------------
         elif self.dataset_name == "gsm8k":
-            raise NotImplementedError(f"Dataset {self.dataset_name} not implemented.")
+            splits = {'train': 'socratic/train-00000-of-00001.parquet', 'test': 'socratic/test-00000-of-00001.parquet'}
+            dataset = pd.read_parquet("hf://datasets/openai/gsm8k/" + splits["test"])
+            print(dataset)
+            dataset["answer_key"] = dataset["answer"].str.split("####").str.get(1).str.strip()
+
         elif self.dataset_name == "gsm8k_mini":
-            raise NotImplementedError(f"Dataset {self.dataset_name} not implemented.")
+            splits = {'train': 'socratic/train-00000-of-00001.parquet', 'test': 'socratic/test-00000-of-00001.parquet'}
+            dataset = pd.read_parquet("hf://datasets/openai/gsm8k/" + splits["test"]).sample(n=100, random_state=42).reset_index(drop=True)
+            dataset["answer_key"] = dataset["answer"].str.split("####").str.get(1).str.strip()
         
         # MMLU-Pro
         # ------------------------------------------------------------------------------------
-        elif self.dataset_name == "gsm8k":
+        elif self.dataset_name == "mmlu_pro":
             raise NotImplementedError(f"Dataset {self.dataset_name} not implemented.")
-        elif self.dataset_name == "gsm8k_mini":
+        elif self.dataset_name == "mmlu_pro_mini":
             raise NotImplementedError(f"Dataset {self.dataset_name} not implemented.")
         
         # ARC-C
@@ -202,6 +210,8 @@ class DatasetFetcher:
         elif self.dataset_name == "arcc_mini":
             raise NotImplementedError(f"Dataset {self.dataset_name} not implemented.")
         
+
+        # ------------------------------------------------------------------------------------
         else:
             raise NotImplementedError(f"Dataset {self.dataset_name} not implemented.")
         
@@ -209,6 +219,7 @@ class DatasetFetcher:
     
 
 if __name__ == "__main__":
-    df = DatasetFetcher(dataset_name="gpqa").dataset
-    print(df["question"][1])
-    print(df["answer_key"][1])
+    df = DatasetFetcher(dataset_name="gsm8k").dataset
+    idx = 2
+    print(df["question"][idx])
+    print(df["answer_key"][idx])

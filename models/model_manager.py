@@ -78,7 +78,7 @@ class ModelManager():
         
         elif self.model_name == "Dream-v0-Instruct-7B":
             self.model_id = f"Dream-org/{self.model_name}"
-            return dream_7b.sample_4_choices(model=self.model_id, prompts=prompts, temperature=temperature)
+            return dream_7b.p_true_eval(model=self.model_id, prompts=prompts, temperature=temperature)
         
         else:
             raise NotImplementedError(f"Model {self.model_name} not implemented.")

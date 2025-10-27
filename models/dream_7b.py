@@ -228,9 +228,7 @@ def p_true_eval(model, prompts, repeat=1, gen_length=3, temperature=0., alg='ent
         input_ids = inputs.input_ids.to(model.device)
         attention_mask = inputs.attention_mask.to(model.device)
 
-        prompt_outputs = []
-        per_prompt_tokens = []
-        per_prompt_logprobs = []
+        confs = []
 
         for _ in range(repeat):
             temp_map = {key: 0 for key in option_variants.keys()}
@@ -294,25 +292,19 @@ def p_true_eval(model, prompts, repeat=1, gen_length=3, temperature=0., alg='ent
                 if matched:
                     break  # stop scanning further tokens; only first ABCD token matters
 
-            # Compute normalized log-probabilities
+            # Compute normalized probabilities
             try:
                 total_prob = sum(temp_map.values())
                 if total_prob > 0:
-                    per_prompt_logprobs.append(float(np.log(temp_map[opt] / total_prob)))
+                    confs.append(float(temp_map[opt] / total_prob))
                 else:
-                    per_prompt_logprobs.append(None)
+                    confs.append(None)
             except:
-                per_prompt_logprobs.append(None)
+                confs.append(None)
             
             print(temp_map)
-            prompt_outputs.append(generations[0].split(tokenizer.eos_token)[0])
-            per_prompt_tokens.append(filtered_tokens_list)
 
-        outputs.append(prompt_outputs)
-        all_tokens.append(per_prompt_tokens)
-        all_logprobs.append(per_prompt_logprobs)
-
-    return outputs, all_tokens, all_logprobs
+    return confs
 
 
 

@@ -136,7 +136,7 @@ class Grader:
             max_tokens=1024,
         )
 
-        grader_prompt = GRADER_PROMPT_MAP.get(self.dataset_name, TRUTHFUL_QA_GRADER_PROMPT)
+        grader_prompt = GRADER_PROMPT_MAP.get(self.dataset_name, SIMPLE_QA_LIKE_PROMPT)
         try:
             formated_prompt_msgs = [
                 [{"role": "system", "content": "You are a helpful assistant."}, 

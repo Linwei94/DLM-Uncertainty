@@ -87,6 +87,8 @@ def sample(model, prompts, repeat=1, gen_length=GEN_LENGTH, temperature=0., alg=
 def sample_4_choices(model, prompts, repeat=1, gen_length=3, temperature=0., alg='entropy'):
     model_path = model
     model = AutoModel.from_pretrained(model_path, torch_dtype=torch.bfloat16, trust_remote_code=True, device_map="auto")
+    model.diffusion_generate = DreamGenerationMixin.diffusion_generate.__get__(model, type(model))
+    model._sample = DreamGenerationMixin._sample.__get__(model, type(model))
     tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     model = model.eval()
 
@@ -199,6 +201,8 @@ def sample_4_choices(model, prompts, repeat=1, gen_length=3, temperature=0., alg
 def p_true_eval(model, prompts, repeat=1, gen_length=3, temperature=0., alg='entropy'):
     model_path = model
     model = AutoModel.from_pretrained(model_path, torch_dtype=torch.bfloat16, trust_remote_code=True, device_map="auto")
+    model.diffusion_generate = DreamGenerationMixin.diffusion_generate.__get__(model, type(model))
+    model._sample = DreamGenerationMixin._sample.__get__(model, type(model))
     tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     model = model.eval()
 

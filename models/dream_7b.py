@@ -6,24 +6,15 @@ import os
 import shutil
 import pandas as pd
 from tqdm import tqdm
+from .custom_dream_generation_utils import DreamGenerationMixin
 
 GEN_LENGTH = 128
-
-# source path (your modified file)
-src = "/home/ivan/DLM-Uncertainty/models/custom_dream_generation_utils.py"
-# destination path (cached Hugging Face location)
-dst_dir = "/hdd/.cache/huggingface/modules/transformers_modules/Dream-org/Dream-v0-Instruct-7B/05334cb9faaf763692dcf9d8737c642be2b2a6ae"
-dst = os.path.join(dst_dir, "generation_utils.py")
-# make sure the destination directory exists
-os.makedirs(dst_dir, exist_ok=True)
-# copy the file
-shutil.copy2(src, dst)
-
-
 
 def sample(model, prompts, repeat=1, gen_length=GEN_LENGTH, temperature=0., alg='entropy'):
     model_path = model
     model = AutoModel.from_pretrained(model_path, torch_dtype=torch.bfloat16, trust_remote_code=True, device_map="auto")
+    model.diffusion_generate = DreamGenerationMixin.diffusion_generate.__get__(model, type(model))
+    model._sample = DreamGenerationMixin._sample.__get__(model, type(model))
     tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     model = model.eval()
 

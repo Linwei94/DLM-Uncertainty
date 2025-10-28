@@ -89,7 +89,7 @@ if __name__ == "__main__":
     else: 
         time.sleep(10)
         if "vnc" in conf.lower():
-            raw_responses, all_tokens, all_logprobs = qa_model.sample(prompts=prompts, repeat=repeat, temperature=temperature)
+            raw_responses, all_tokens, all_logprobs = qa_model.sample(prompts=prompts, repeat=repeat, temperature=temperature, gen_length=10)
         else:
             sampling_methods = {
                 "mmlu": qa_model.sample_4_choices,

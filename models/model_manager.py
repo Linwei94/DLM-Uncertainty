@@ -9,26 +9,26 @@ class ModelManager():
         self.llada_gen_length = LLADA_GEN_LENGTH_MAP[dataset_name]
         self.hf_gen_length = AR_GEN_LENGTH_MAP[dataset_name]
 
-    def sample(self, prompts, repeat=1, temperature=0):
+    def sample(self, prompts, repeat=1, temperature=0, gen_length = None):
         if self.model_name == "Meta-Llama-3-8B-Instruct":
             self.model_id = f"meta-llama/{self.model_name}"
-            return llama_3.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
+            return llama_3.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
         
         elif self.model_name == "Meta-Llama-3-8B":
             self.mnodelmodel_id_id = f"meta-llama/{self.model_name}"
-            return llama_3.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
+            return llama_3.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
         
         elif self.model_name == "LLaDA-8B":
             self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada_8b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
+            return llada_8b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
         
         elif self.model_name == "LLaDA-8B-Instruct":
             self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada_8b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
+            return llada_8b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
         
         elif self.model_name == "Dream-v0-Instruct-7B":
             self.model_id = f"Dream-org/{self.model_name}"
-            return dream_7b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length)
+            return dream_7b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length)
         
         else:
             raise NotImplementedError(f"Model {self.model_name} not implemented.")

@@ -231,9 +231,9 @@ class ConfidenceEstimator:
         Question: {question}
         Proposed Answer: {proposed_answer}
         Is the proposed answer:
-         True
-         False
-        Output either True or False with no other text around it.
+        A) True
+        B) False
+        Output either A or B with no other text around it.
         """.strip()
 
         # if "mmlu" in self.dataset_name:

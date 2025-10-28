@@ -1,4 +1,4 @@
-from . import llada_8b, llama_3, dream_7b
+from . import hf_model, llada, dream_7b
 from configs import *
 
 class ModelManager():
@@ -12,19 +12,27 @@ class ModelManager():
     def sample(self, prompts, repeat=1, temperature=0, gen_length = None):
         if self.model_name == "Meta-Llama-3-8B-Instruct":
             self.model_id = f"meta-llama/{self.model_name}"
-            return llama_3.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
+            return hf_model.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
         
         elif self.model_name == "Meta-Llama-3-8B":
-            self.mnodelmodel_id_id = f"meta-llama/{self.model_name}"
-            return llama_3.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
+            self.model_id = f"meta-llama/{self.model_name}"
+            return hf_model.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
         
-        elif self.model_name == "LLaDA-8B":
+        elif self.model_name == "Qwen2.5-7B-Instruct":
+            self.model_id = f"Qwen/{self.model_name}"
+            return hf_model.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
+        
+        elif self.model_name == "LLaDA-8B-Base":
             self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada_8b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
+            return llada.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
+        
+        elif self.model_name == "LLaDA-1.5":
+            self.model_id = f"GSAI-ML/{self.model_name}"
+            return llada.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
         
         elif self.model_name == "LLaDA-8B-Instruct":
             self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada_8b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
+            return llada.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
         
         elif self.model_name == "Dream-v0-Instruct-7B":
             self.model_id = f"Dream-org/{self.model_name}"
@@ -37,19 +45,27 @@ class ModelManager():
     def sample_4_choices(self, prompts, repeat=1, temperature=0):
         if self.model_name == "Meta-Llama-3-8B-Instruct":
             self.model_id = f"meta-llama/{self.model_name}"
-            return llama_3.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
+            return hf_model.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
         
         elif self.model_name == "Meta-Llama-3-8B":
-            self.mnodelmodel_id_id = f"meta-llama/{self.model_name}"
-            return llama_3.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
+            self.model_id = f"meta-llama/{self.model_name}"
+            return hf_model.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
         
-        elif self.model_name == "LLaDA-8B":
+        elif self.model_name == "Qwen2.5-7B-Instruct":
+            self.model_id = f"Qwen/{self.model_name}"
+            return hf_model.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
+        
+        elif self.model_name == "LLaDA-8B-Base":
             self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada_8b.sample_4_choices(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
+            return llada.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
+        
+        elif self.model_name == "LLaDA-1.5":
+            self.model_id = f"GSAI-ML/{self.model_name}"
+            return llada.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
         
         elif self.model_name == "LLaDA-8B-Instruct":
             self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada_8b.sample_4_choices(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
+            return llada.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
         
         elif self.model_name == "Dream-v0-Instruct-7B":
             self.model_id = f"Dream-org/{self.model_name}"
@@ -62,19 +78,27 @@ class ModelManager():
     def p_true_eval(self, prompts, repeat=1, temperature=0):
         if self.model_name == "Meta-Llama-3-8B-Instruct":
             self.model_id = f"meta-llama/{self.model_name}"
-            return llama_3.p_true_eval(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature)
+            return hf_model.p_true_eval(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature)
         
         elif self.model_name == "Meta-Llama-3-8B":
-            self.mnodelmodel_id_id = f"meta-llama/{self.model_name}"
-            return llama_3.p_true_eval(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature)
+            self.model_id = f"meta-llama/{self.model_name}"
+            return hf_model.p_true_eval(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature)
         
-        elif self.model_name == "LLaDA-8B":
+        elif self.model_name == "Qwen2.5-7B-Instruct":
+            self.model_id = f"Qwen/{self.model_name}"
+            return hf_model.p_true_eval(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature)
+        
+        elif self.model_name == "LLaDA-8B-Base":
             self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada_8b.p_true_eval(model=self.model_id, prompts=prompts, temperature=temperature)
+            return llada.p_true_eval(model_id=self.model_id, prompts=prompts, temperature=temperature)
+        
+        elif self.model_name == "LLaDA-1.5":
+            self.model_id = f"GSAI-ML/{self.model_name}"
+            return llada.p_true_eval(model_id=self.model_id, prompts=prompts, temperature=temperature)
         
         elif self.model_name == "LLaDA-8B-Instruct":
             self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada_8b.p_true_eval(model=self.model_id, prompts=prompts, temperature=temperature)
+            return llada.p_true_eval(model_id=self.model_id, prompts=prompts, temperature=temperature)
         
         elif self.model_name == "Dream-v0-Instruct-7B":
             self.model_id = f"Dream-org/{self.model_name}"

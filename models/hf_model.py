@@ -43,8 +43,8 @@ def p_true_eval(model_id, prompts, repeat=1, max_tokens=8, temperature=0):
 
     # True/False token variants
     tf_variants = {
-        "True": ["TRUE", "True", "true", "T", "t", "ĠTrue", "Ġtrue", "Yes", "yes", "ĠYes", "Ġyes"],
-        "False": ["FALSE", "False", "false", "F", "f", "ĠFalse", "Ġfalse", "No", "no", "ĠNo", "Ġno"]
+        "True": ["True", "true", "ĠTrue", "Ġtrue", "Yes", "yes", "ĠYes", "Ġyes", "A", "a", "ĠA", "Ġa"],
+        "False": ["False", "false", "ĠFalse", "Ġfalse", "No", "no", "ĠNo", "Ġno", "B", "b", "ĠB", "Ġb"]
     }
 
     llm = LLM(model=model_id, max_model_len=2048)
@@ -70,8 +70,6 @@ def p_true_eval(model_id, prompts, repeat=1, max_tokens=8, temperature=0):
                     elif top_k.decoded_token.strip().lower() in tf_variants["False"]:
                         temp_map["False"] += float(np.exp(top_k.logprob))
                 break
-
-        print(temp_map)
         try:
             p_true = temp_map["True"] / sum(temp_map.values())
             confs.append(p_true)
@@ -98,7 +96,7 @@ def sample_4_choices(model_id, prompts, repeat=1, max_tokens=8, temperature=0):
         prompt_outputs, per_prompt_tokens, per_prompt_logprobs = [], [], []
 
         for _ in range(repeat):
-            llm_outputs = llm.generate([prompt], sampling_params)
+            llm_outputs = llm.generate([prompt], sampling_params, use_tqdm=False)
             output = llm_outputs[0]
             text = output.outputs[0].text.strip()
             logprob_info = output.outputs[0].logprobs  # list[dict] per generated token

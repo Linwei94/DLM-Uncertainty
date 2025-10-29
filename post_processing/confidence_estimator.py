@@ -139,7 +139,7 @@ class ConfidenceEstimator:
         for text in self.raw_responses:
             if "mmlu" in self.dataset_name:
                 prompt = f"""
-                You are a strict information extractor. The text is an answer followed by a confidence socre. Extract ONLY what is contained in the given text,
+                You are a strict information extractor. The text is an answer followed by a confidence score. Extract ONLY what is contained in the given text,
                 without using any outside knowledge. Return a valid JSON object strictly in this format:
 
                 {{
@@ -152,7 +152,7 @@ class ConfidenceEstimator:
                 """
             else:
                 prompt = f"""
-                You are a strict information extractor. The text is an answer followed by a confidence socre. Extract ONLY what is contained in the given text,
+                You are a strict information extractor. The text is an answer followed by a confidence score. Extract ONLY what is contained in the given text,
                 without using any outside knowledge. Return a valid JSON object strictly in this format:
                 {{
                     "answer": "<the answer extracted from the text, or null if none.>",
@@ -231,9 +231,9 @@ class ConfidenceEstimator:
         Question: {question}
         Proposed Answer: {proposed_answer}
         Is the proposed answer:
-         True
-         False
-        Output either True or False with no other text around it.
+        A) True
+        B) False
+        Output either A or B with no other text around it.
         """.strip()
 
         # if "mmlu" in self.dataset_name:

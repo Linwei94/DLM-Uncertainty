@@ -140,13 +140,13 @@ def forward_process(batch, prompt_index, mask_id):
     return noisy_batch, (x / target_len).unsqueeze(1).repeat(1, l)
     
 
-def sample(model, prompts, repeat=1, steps=GEN_LENGTH, gen_length=GEN_LENGTH, block_length=BLOCK_LENGTH, temperature=0., cfg_scale=0., remasking='low_confidence'):
+def sample(model_id, prompts, repeat=1, steps=GEN_LENGTH, gen_length=GEN_LENGTH, block_length=BLOCK_LENGTH, temperature=0., cfg_scale=0., remasking='low_confidence'):
     
     # device = 'cuda'
 
     # Load model and tokenizer
     model = AutoModel.from_pretrained(
-        'GSAI-ML/LLaDA-8B-Instruct', 
+        model_id, 
         trust_remote_code=True, 
         torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
@@ -154,7 +154,7 @@ def sample(model, prompts, repeat=1, steps=GEN_LENGTH, gen_length=GEN_LENGTH, bl
     ).eval()
 
     tokenizer = AutoTokenizer.from_pretrained(
-        'GSAI-ML/LLaDA-8B-Instruct', 
+        model_id, 
         trust_remote_code=True
     )
         
@@ -204,11 +204,11 @@ def sample(model, prompts, repeat=1, steps=GEN_LENGTH, gen_length=GEN_LENGTH, bl
     return outputs, all_tokens, all_logprobs
 
 
-def sample_4_choices(model, prompts, repeat=1, steps=3, gen_length=3, block_length=3, temperature=0., cfg_scale=0., remasking='low_confidence'):
+def sample_4_choices(model_id, prompts, repeat=1, steps=3, gen_length=3, block_length=3, temperature=0., cfg_scale=0., remasking='low_confidence'):
     
     # Load model and tokenizer
     model = AutoModel.from_pretrained(
-        'GSAI-ML/LLaDA-8B-Instruct', 
+        model_id, 
         trust_remote_code=True, 
         torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
@@ -216,7 +216,7 @@ def sample_4_choices(model, prompts, repeat=1, steps=3, gen_length=3, block_leng
     ).eval()
 
     tokenizer = AutoTokenizer.from_pretrained(
-        'GSAI-ML/LLaDA-8B-Instruct', 
+        model_id, 
         trust_remote_code=True
     )
         
@@ -306,11 +306,11 @@ def sample_4_choices(model, prompts, repeat=1, steps=3, gen_length=3, block_leng
     return outputs, all_tokens, all_logprobs
 
 
-def p_true_eval(model, prompts, repeat=1, steps=3, gen_length=3, block_length=3, temperature=0., cfg_scale=0., remasking='low_confidence'):
+def p_true_eval(model_id, prompts, repeat=1, steps=3, gen_length=3, block_length=3, temperature=0., cfg_scale=0., remasking='low_confidence'):
 
     # Load model and tokenizer
     model = AutoModel.from_pretrained(
-        'GSAI-ML/LLaDA-8B-Instruct', 
+        model_id, 
         trust_remote_code=True, 
         torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
@@ -318,14 +318,14 @@ def p_true_eval(model, prompts, repeat=1, steps=3, gen_length=3, block_length=3,
     ).eval()
 
     tokenizer = AutoTokenizer.from_pretrained(
-        'GSAI-ML/LLaDA-8B-Instruct', 
+        model_id, 
         trust_remote_code=True
     )
 
     # Define True/False token variants
     tf_variants = {
-        True: ["True", "true", "ĠTrue", "Ġtrue", "Yes", "yes", "ĠYes", "Ġyes"],
-        False: ["False", "false", "ĠFalse", "Ġfalse", "No", "no", "ĠNo", "Ġno"]
+        True : ["True", "true", "ĠTrue", "Ġtrue", "Yes", "yes", "ĠYes", "Ġyes", "A", "a", "ĠA", "Ġa"],
+        False : ["False", "false", "ĠFalse", "Ġfalse", "No", "no", "ĠNo", "Ġno", "B", "b", "ĠB", "Ġb"]
     }
 
     confs = []
@@ -386,5 +386,4 @@ def p_true_eval(model, prompts, repeat=1, steps=3, gen_length=3, block_length=3,
                 confs.append(p_true)
             except:
                 confs.append(None)
-
     return confs

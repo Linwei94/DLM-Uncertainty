@@ -208,14 +208,14 @@ def p_true_eval(model, prompts, repeat=1, gen_length=3, temperature=0., alg='ent
 
     # Define token variants
     option_variants = {
-        "True": ["True", "true", "ĠTrue", "Ġtrue", "Yes", "yes", "ĠYes", "Ġyes"],
-        "False": ["False", "false", "ĠFalse", "Ġfalse", "No", "no", "ĠNo", "Ġno"]
+        "A": ["True", "true", "ĠTrue", "Ġtrue", "Yes", "yes", "ĠYes", "Ġyes", "A", "a", "ĠA", "Ġa"],
+        "B": ["False", "false", "ĠFalse", "Ġfalse", "No", "no", "ĠNo", "Ġno", "B", "b", "ĠB", "Ġb"]
     }
 
     outputs = []
     all_tokens = []
     all_logprobs = []
-
+    confs = []
     for prompt in tqdm(prompts, desc=f"Processing prompts"):
         
         messages = [{"role": "user", "content": prompt}]
@@ -223,7 +223,7 @@ def p_true_eval(model, prompts, repeat=1, gen_length=3, temperature=0., alg='ent
         input_ids = inputs.input_ids.to(model.device)
         attention_mask = inputs.attention_mask.to(model.device)
 
-        confs = []
+        
 
         for _ in range(repeat):
             temp_map = {key: 0 for key in option_variants.keys()}
@@ -291,14 +291,12 @@ def p_true_eval(model, prompts, repeat=1, gen_length=3, temperature=0., alg='ent
             try:
                 total_prob = sum(temp_map.values())
                 if total_prob > 0:
-                    confs.append(float(temp_map[opt] / total_prob))
+                    confs.append(float(temp_map["A"] / total_prob))
                 else:
                     confs.append(None)
             except:
                 confs.append(None)
-            
-            print(temp_map)
-
+    print(confs)
     return confs
 
 

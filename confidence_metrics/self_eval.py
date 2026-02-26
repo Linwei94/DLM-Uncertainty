@@ -1,6 +1,6 @@
-from ..default_utils.custom_types import ModelOutputs, PromptCollection, OrganisedOutputs
-from ..models.model_manager import ModelManager
-from ..default_utils.registry import register_confidence
+from default_utils.custom_types import ModelOutputs, PromptCollection, OrganisedOutputs
+from models.model_manager import ModelManager
+from default_utils.registry import register_confidence
 import numpy as np
 import logging
 import re

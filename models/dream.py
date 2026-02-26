@@ -4,7 +4,7 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
 import numpy as np
-from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
+from default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 
 
 class DreamDLM(AbstractModel):

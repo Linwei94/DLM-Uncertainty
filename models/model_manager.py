@@ -1,4 +1,4 @@
-from ..default_utils.custom_types import ModelOutputs, PromptCollection, AbstractModel
+from default_utils.custom_types import ModelOutputs, PromptCollection, AbstractModel
 from .dream import DreamDLM
 from .vllm_model import vLLMModel
 from .llada import LlaDADLM

@@ -1,7 +1,7 @@
 import logging
-from ..default_utils.custom_types import ModelOutputs, PromptCollection
-from ..default_utils.registry import register_filter
-from ..models.model_manager import ModelManager
+from default_utils.custom_types import ModelOutputs, PromptCollection
+from default_utils.registry import register_filter
+from models.model_manager import ModelManager
 import re
 import ast
 

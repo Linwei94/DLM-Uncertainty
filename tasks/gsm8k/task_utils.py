@@ -1,6 +1,6 @@
 import pandas as pd
-from ...default_utils.custom_types import ModelOutputs, OrganisedOutputs, PromptCollection
-from ...default_utils.datasets_manager import DatasetsManager
+from default_utils.custom_types import ModelOutputs, OrganisedOutputs, PromptCollection
+from default_utils.datasets_manager import DatasetsManager
 import numpy as np
 from jinja2 import Template
 

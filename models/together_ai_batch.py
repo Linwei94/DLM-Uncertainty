@@ -1,4 +1,4 @@
-from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
+from default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 
 class TogetherAIBatch(AbstractModel):
     def __init__(self, cfg):

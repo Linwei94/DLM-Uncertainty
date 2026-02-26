@@ -4,8 +4,8 @@ import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from tqdm import tqdm
 from torch.nn import functional as F
-from ..default_utils.custom_types import ModelOutputs, OrganisedOutputs, PromptCollection
-from ..default_utils.registry import register_confidence
+from default_utils.custom_types import ModelOutputs, OrganisedOutputs, PromptCollection
+from default_utils.registry import register_confidence
 
 class EntailmentDeberta():
     def __init__(self):

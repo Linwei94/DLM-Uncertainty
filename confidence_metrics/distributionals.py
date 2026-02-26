@@ -7,10 +7,10 @@ import torch
 from tqdm import tqdm
 from scipy.stats import beta
 import re
-from ..confidence_metrics.semantics import semantic_cluster_selection, EntailmentDeberta
-from ..default_utils.registry import register_confidence
-from ..default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
-from ..models.model_manager import ModelManager
+from confidence_metrics.semantics import semantic_cluster_selection, EntailmentDeberta
+from default_utils.registry import register_confidence
+from default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
+from models.model_manager import ModelManager
 
 class BetaDistribution:
     def __init__(self, mu: float, sigma: float):

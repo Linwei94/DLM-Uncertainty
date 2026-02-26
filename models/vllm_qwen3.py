@@ -6,7 +6,7 @@ import numpy as np
 import pickle
 import os
 from vllm import LLM, SamplingParams
-from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
+from default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 
 
 class vLLMQwen3(AbstractModel):

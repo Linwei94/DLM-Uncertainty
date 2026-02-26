@@ -1,7 +1,7 @@
-from ..default_utils.custom_types import ModelOutputs, PromptCollection, OrganisedOutputs
+from default_utils.custom_types import ModelOutputs, PromptCollection, OrganisedOutputs
 import numpy as np
-from ..default_utils.registry import register_confidence
-from ..models.model_manager import ModelManager
+from default_utils.registry import register_confidence
+from models.model_manager import ModelManager
 
 
 @register_confidence(name="verbalised_numerical_confidence_with_llm_extractor")

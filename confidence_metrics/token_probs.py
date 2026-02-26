@@ -1,5 +1,5 @@
-from ..default_utils.registry import register_confidence
-from ..default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
+from default_utils.registry import register_confidence
+from default_utils.custom_types import OrganisedOutputs, ModelOutputs, PromptCollection
 import numpy as np
 
 @register_confidence(name="length_normalised_log_likelihood")

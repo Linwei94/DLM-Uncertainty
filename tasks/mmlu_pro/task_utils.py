@@ -1,5 +1,5 @@
 import pandas as pd
-from ...default_utils.custom_types import ModelOutputs
+from default_utils.custom_types import ModelOutputs
 
 def preprocess_dataset(dataset: pd.DataFrame) -> pd.DataFrame:
     """

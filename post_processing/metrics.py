@@ -10,9 +10,9 @@ from concurrent.futures import ProcessPoolExecutor
 from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
 
-from ..confidence_metrics.distributionals import BetaDistribution
-from ..default_utils.custom_types import OrganisedOutputs
-from ..default_utils.registry import register_metric
+from confidence_metrics.distributionals import BetaDistribution
+from default_utils.custom_types import OrganisedOutputs
+from default_utils.registry import register_metric
 
 
 @register_metric(name="accuracy_scalar_with_abstention")

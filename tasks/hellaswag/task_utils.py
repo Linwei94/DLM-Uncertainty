@@ -1,6 +1,6 @@
 import pandas as pd
-from ...default_utils.custom_types import ModelOutputs, PromptCollection
-from ...default_utils.datasets_manager import DatasetsManager
+from default_utils.custom_types import ModelOutputs, PromptCollection
+from default_utils.datasets_manager import DatasetsManager
 from jinja2 import Template
 import re
 

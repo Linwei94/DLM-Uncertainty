@@ -1,13 +1,62 @@
 import time
 from tqdm import tqdm
-from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
+from default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 from transformers import AutoTokenizer
 import gc
 import numpy as np
 import pickle
 import os
-from vllm import LLM, SamplingParams
 import logging
+
+# Patch vllm Disabledtqdm for tqdm/huggingface_hub compatibility (avoid "multiple values for disable")
+import vllm.model_executor.weight_utils as _weight_utils
+_orig_disabled_tqdm = _weight_utils.Disabledtqdm
+
+
+class _FixedDisabledtqdm(_orig_disabled_tqdm):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("disable", None)  # Avoid duplicate disable= when caller passes it
+        super(_orig_disabled_tqdm, self).__init__(*args, **kwargs, disable=True)
+
+
+_weight_utils.Disabledtqdm = _FixedDisabledtqdm
+
+# Patch vllm for Llama 3.x rope_scaling compatibility
+import vllm.config as _vllm_config
+from vllm.model_executor.layers import rotary_embedding as _rotary_embedding
+
+_orig_get_max_len = _vllm_config._get_and_verify_max_len
+_orig_get_rope = _rotary_embedding.get_rope
+
+
+def _patched_get_max_len(hf_config, max_model_len):
+    rope_scaling = getattr(hf_config, "rope_scaling", None)
+    if rope_scaling is not None and isinstance(rope_scaling, dict):
+        rope_scaling = dict(rope_scaling)
+        raw_type = rope_scaling.get("type") or rope_scaling.get("rope_type", "linear")
+        if raw_type in ("default", "llama3"):
+            raw_type = "linear"
+        rope_scaling["type"] = raw_type
+        rope_scaling.setdefault("factor", 1.0)
+        object.__setattr__(hf_config, "rope_scaling", rope_scaling)
+    return _orig_get_max_len(hf_config, max_model_len)
+
+
+def _patched_get_rope(*args, rope_scaling=None, **kwargs):
+    """Map default/llama3 RoPE types to linear (vllm 0.2.5 only supports linear/dynamic/yarn)."""
+    if rope_scaling is not None:
+        rope_scaling = dict(rope_scaling)
+        raw_type = rope_scaling.get("type", "linear")
+        if raw_type in ("default", "llama3"):
+            rope_scaling["type"] = "linear"
+        rope_scaling.setdefault("factor", 1.0)
+    return _orig_get_rope(*args, rope_scaling=rope_scaling, **kwargs)
+
+
+_vllm_config._get_and_verify_max_len = _patched_get_max_len
+_rotary_embedding.get_rope = _patched_get_rope
+
+from vllm import LLM, SamplingParams
 
 
 class vLLMModel(AbstractModel):
@@ -18,8 +67,56 @@ class vLLMModel(AbstractModel):
         self.cfg = cfg
         self.model_name = cfg.get("name", None)
         self.repeat = cfg.get("repeat", 1)
+        self.tokenizer_name = self._resolve_tokenizer_name()
         self.tokenizer = AutoTokenizer.from_pretrained(
-            self.model_name, trust_remote_code=True)
+            self.tokenizer_name, trust_remote_code=True)
+        self._llm = None  # Lazy init, reused across rounds
+
+    def _resolve_tokenizer_name(self) -> str:
+        """Resolve tokenizer with optional fast path for legacy LLaMA v1 models."""
+        explicit = self.cfg.get("tokenizer_name", None)
+        if explicit:
+            return explicit
+
+        model_lower = (self.model_name or "").lower()
+        is_llama = "llama" in model_lower
+        is_newer_llama = any(tag in model_lower for tag in [
+            "llama-2", "llama2", "llama-3", "llama3", "llama-4", "llama4"
+        ])
+        use_fast_llama_v1 = self.cfg.get("use_fast_llama_v1_tokenizer", True)
+
+        if is_llama and not is_newer_llama and use_fast_llama_v1:
+            logging.info(
+                "Using fast tokenizer override for LLaMA v1-style model: %s -> hf-internal-testing/llama-tokenizer",
+                self.model_name,
+            )
+            return "hf-internal-testing/llama-tokenizer"
+        return self.model_name
+
+    def _get_llm(self):
+        """Create LLM once and reuse across rounds."""
+        if self._llm is None:
+            # Use float16 for PyTorch 2.1 compatibility (bfloat16 can cause dtype errors)
+            kwargs = dict(
+                model=self.model_name,
+                tokenizer=self.tokenizer_name,
+                max_model_len=self.cfg.get("max_model_len", 4096),
+                dtype="float16",
+            )
+            # Lower gpu_memory_utilization (default 0.85) to reduce OOM when GPU is shared
+            kwargs["gpu_memory_utilization"] = self.cfg.get("gpu_memory_utilization", 0.85)
+            self._llm = LLM(**kwargs)
+        return self._llm
+
+    def shutdown(self):
+        """Release vLLM resources when done."""
+        if self._llm is not None:
+            try:
+                self._llm.llm_engine.engine_core.shutdown()
+            except Exception:
+                pass
+            self._llm = None
+            gc.collect()
 
     def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
 
@@ -35,8 +132,7 @@ class vLLMModel(AbstractModel):
                                          logprobs=5,
                                          stop=list(stop_seq)
                                          )
-        vllm_model = LLM(model=self.model_name,
-                         max_model_len=self.cfg.get("max_model_len", 4096))
+        vllm_model = self._get_llm()
 
         model_outputs_list = []
         for _ in range(self.repeat):
@@ -84,9 +180,17 @@ class vLLMModel(AbstractModel):
                     if completion.logprobs:
                         for lp in completion.logprobs:
                             if lp and len(lp) > 0:
-                                # save top 1 logprob aka output logprobs
-                                tok_info = list(lp.values())[0]
-                                decoded_token = tok_info.decoded_token
+                                # vllm 0.2.5: lp is dict of token_id->LogProb or token_id->float
+                                items = list(lp.items())
+                                token_key = items[0][0]
+                                tok_info = items[0][1]
+                                tok_logprob = tok_info.logprob if hasattr(tok_info, "logprob") else tok_info
+                                # vllm 0.2.5 uses token ids as keys; decode to string
+                                decoded_token = (
+                                    self.tokenizer.decode([token_key])
+                                    if isinstance(token_key, int)
+                                    else token_key
+                                )
 
                                 # If has_assistant_token, skip tokens until we find "final"
                                 match self.model_name.lower():
@@ -101,9 +205,15 @@ class vLLMModel(AbstractModel):
                                 # Skip special tokens
                                 if decoded_token not in self.tokenizer.all_special_tokens and not (decoded_token.startswith("<|") and decoded_token.endswith("|>")):
                                     tokens.append(decoded_token)
-                                    logprobs.append(tok_info.logprob)
-                                    # save top k tokens and logprobs
-                                    top_ks.append([(tk.decoded_token, tk.logprob) for tk in list(lp.values())])
+                                    logprobs.append(tok_logprob)
+                                    # save top k tokens and logprobs (decode ids to strings)
+                                    top_ks.append([
+                                        (
+                                            self.tokenizer.decode([k]) if isinstance(k, int) else k,
+                                            v.logprob if hasattr(v, "logprob") else v,
+                                        )
+                                        for k, v in items
+                                    ])
 
                     # Slice tokens and logprobs to match generated text length
                     tokens = tokens[-expected_length:] if expected_length > 0 else tokens
@@ -119,10 +229,7 @@ class vLLMModel(AbstractModel):
                 output_logprobs=output_logprobs,
                 top_k_tokens=all_top_k_tokens,
             ))
-        vllm_model.llm_engine.engine_core.shutdown()
-        del vllm_model
-        del self.tokenizer
-        gc.collect()
+        # Keep LLM alive for reuse across rounds (no shutdown here)
         return model_outputs_list
 
 
@@ -131,6 +238,7 @@ class vLLMModel(AbstractModel):
         # ---- Load vLLM ----
         llm = LLM(
             model=self.model_name,
+            tokenizer=self.tokenizer_name,
             dtype="bfloat16",
             trust_remote_code=True,
             gpu_memory_utilization=0.90,

@@ -1,4 +1,4 @@
-from ..default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
+from default_utils.custom_types import AbstractModel, ModelOutputs, PromptCollection
 from openai import OpenAI
 import json
 import os

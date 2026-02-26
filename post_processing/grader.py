@@ -1,7 +1,7 @@
-from ..default_utils.custom_types import OrganisedOutputs, PromptCollection, ModelOutputs
-from ..default_utils.datasets_manager import DatasetsManager
-from ..default_utils.registry import register_grader
-from ..models.model_manager import ModelManager
+from default_utils.custom_types import OrganisedOutputs, PromptCollection, ModelOutputs
+from default_utils.datasets_manager import DatasetsManager
+from default_utils.registry import register_grader
+from models.model_manager import ModelManager
 import pandas as pd
 
 @register_grader(name="exact_match")

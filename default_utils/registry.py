@@ -1,4 +1,4 @@
-from ..default_utils.custom_types import (ConfidenceExtractorFn, 
+from .custom_types import (ConfidenceExtractorFn, 
                                         GraderFn, 
                                         OutputFilterFn,
                                         PromptFormatterFn,

@@ -1,108 +1,47 @@
-from . import hf_model, llada, dream_7b
-from configs import *
+from ..default_utils.custom_types import ModelOutputs, PromptCollection, AbstractModel
+from .dream import DreamDLM
+from .vllm_model import vLLMModel
+from .llada import LlaDADLM
+from .vllm_qwen3 import vLLMQwen3
+import logging
 
-class ModelManager():
+class ModelManager:
+    def __init__(self, master_cfg: dict, model_config_type="qa_model"):
+        self.model_cfg: dict = master_cfg[model_config_type]
+        self.model: AbstractModel
+        
+        match self.model_cfg.get("backend", None):
+            case "vllm":
+                if "qwen3" in self.model_cfg.get("name").lower():
+                    # Qwen 3 has a two-stage reasoning control mechanism; hence a custom vLLM wrapper
+                    logging.info("Using vLLM Qwen3 model backend")
+                    self.model = vLLMQwen3(self.model_cfg)
+                else:
+                    logging.info("Using vLLM general model backend")
+                    self.model = vLLMModel(self.model_cfg)
+            case "dream":
+                logging.info("Using Dream model backend")
+                self.model = DreamDLM(self.model_cfg)
+            case "llada":
+                logging.info("Using LlaDA model backend")
+                self.model = LlaDADLM(self.model_cfg)
+            case "openai_batch":
+                raise NotImplementedError("Not implemented yet")
+            case "claude_batch":
+                raise NotImplementedError("Not implemented yet")
+            case "together_ai_batch":
+                raise NotImplementedError("Not implemented yet")
+            case None:
+                raise ValueError(f"Model type not specified in config for {model_config_type}")
+            case _:
+                raise ValueError(f"Unknown model type: {self.model_cfg.type}")
 
-    def __init__(self, model_name, dataset_name):
-        self.model_id = ""
-        self.model_name = model_name
-        self.llada_gen_length = LLADA_GEN_LENGTH_MAP[dataset_name]
-        self.hf_gen_length = AR_GEN_LENGTH_MAP[dataset_name]
+        self.tokenizer = self.model.tokenizer
 
-    def sample(self, prompts, repeat=1, temperature=0, gen_length = None):
-        if self.model_name == "Meta-Llama-3-8B-Instruct":
-            self.model_id = f"meta-llama/{self.model_name}"
-            return hf_model.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
-        
-        elif self.model_name == "Meta-Llama-3-8B":
-            self.model_id = f"meta-llama/{self.model_name}"
-            return hf_model.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
-        
-        elif self.model_name == "Qwen2.5-7B-Instruct":
-            self.model_id = f"Qwen/{self.model_name}"
-            return hf_model.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=gen_length if gen_length else self.hf_gen_length)
-        
-        elif self.model_name == "LLaDA-8B-Base":
-            self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
-        
-        elif self.model_name == "LLaDA-1.5":
-            self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
-        
-        elif self.model_name == "LLaDA-8B-Instruct":
-            self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada.sample(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length, block_length=gen_length if gen_length else self.llada_gen_length, steps=gen_length if gen_length else self.llada_gen_length)
-        
-        elif self.model_name == "Dream-v0-Instruct-7B":
-            self.model_id = f"Dream-org/{self.model_name}"
-            return dream_7b.sample(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=gen_length if gen_length else self.llada_gen_length)
-        
-        else:
-            raise NotImplementedError(f"Model {self.model_name} not implemented.")
-        
 
-    def sample_4_choices(self, prompts, repeat=1, temperature=0):
-        if self.model_name == "Meta-Llama-3-8B-Instruct":
-            self.model_id = f"meta-llama/{self.model_name}"
-            return hf_model.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
-        
-        elif self.model_name == "Meta-Llama-3-8B":
-            self.model_id = f"meta-llama/{self.model_name}"
-            return hf_model.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
-        
-        elif self.model_name == "Qwen2.5-7B-Instruct":
-            self.model_id = f"Qwen/{self.model_name}"
-            return hf_model.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, max_tokens=self.hf_gen_length)
-        
-        elif self.model_name == "LLaDA-8B-Base":
-            self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
-        
-        elif self.model_name == "LLaDA-1.5":
-            self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
-        
-        elif self.model_name == "LLaDA-8B-Instruct":
-            self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada.sample_4_choices(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length, block_length=self.llada_gen_length, steps=self.llada_gen_length)
-        
-        elif self.model_name == "Dream-v0-Instruct-7B":
-            self.model_id = f"Dream-org/{self.model_name}"
-            return dream_7b.sample_4_choices(model=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature, gen_length=self.llada_gen_length)
-        
-        else:
-            raise NotImplementedError(f"Model {self.model_name} not implemented.")
-        
+    def run_generation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
+        return self.model.run_generation(prompt_collection)
     
-    def p_true_eval(self, prompts, repeat=1, temperature=0):
-        if self.model_name == "Meta-Llama-3-8B-Instruct":
-            self.model_id = f"meta-llama/{self.model_name}"
-            return hf_model.p_true_eval(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature)
-        
-        elif self.model_name == "Meta-Llama-3-8B":
-            self.model_id = f"meta-llama/{self.model_name}"
-            return hf_model.p_true_eval(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature)
-        
-        elif self.model_name == "Qwen2.5-7B-Instruct":
-            self.model_id = f"Qwen/{self.model_name}"
-            return hf_model.p_true_eval(model_id=self.model_id, prompts=prompts, repeat=repeat, temperature=temperature)
-        
-        elif self.model_name == "LLaDA-8B-Base":
-            self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada.p_true_eval(model_id=self.model_id, prompts=prompts, temperature=temperature)
-        
-        elif self.model_name == "LLaDA-1.5":
-            self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada.p_true_eval(model_id=self.model_id, prompts=prompts, temperature=temperature)
-        
-        elif self.model_name == "LLaDA-8B-Instruct":
-            self.model_id = f"GSAI-ML/{self.model_name}"
-            return llada.p_true_eval(model_id=self.model_id, prompts=prompts, temperature=temperature)
-        
-        elif self.model_name == "Dream-v0-Instruct-7B":
-            self.model_id = f"Dream-org/{self.model_name}"
-            return dream_7b.p_true_eval(model=self.model_id, prompts=prompts, temperature=temperature)
-        
-        else:
-            raise NotImplementedError(f"Model {self.model_name} not implemented.")
+
+    def run_continuation(self, prompt_collection: PromptCollection) -> list[ModelOutputs]:
+        return self.model.run_continuation(prompt_collection)

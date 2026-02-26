@@ -1,0 +1,54 @@
+seed: 42
+dataset_name: gsm8k # must match the folder name under tasks/
+dataset_path: openai/gsm8k
+subset: main
+split: test
+few_shot_split: train
+few_shot_examples: 5
+limit: 200
+
+# multiple choice: "question: str", "choices : list", and "answer_index: int"
+dataset_preprocessor: task_utils.preprocess_dataset
+
+# placeholder variables must match the dataset column names, formatted using Jinja2
+question_format: "{{question.strip()}}"   # question formatting template
+prompt_format: |
+  {{few_shot_examples}}
+
+  Question: {{formatted_question}}
+  Answer: 
+
+system_prompt: ""
+prompt_formatter: task_utils.gsm8k_prompt_formatter 
+generation_type: generation
+output_filters: 
+  - name: regex_extractor
+    args:
+      regexes:
+        - (?s)(?:.*\n\n)?([\s\S]*?\d[\s\S]*)
+        - ([\s\S])
+confidence_metrics: null
+grader: llm_grader
+performance_metrics:
+  - accuracy_scalar_with_abstention
+  - ece_scalar
+  - auroc_scalar
+
+qa_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  temperature: 0.2
+  max_tokens: 512
+  max_model_len: 2048
+  reasoning_effort: low
+
+
+grader_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  temperature: 0
+  max_tokens: 512
+  max_model_len: 2048
+  reasoning_effort: low

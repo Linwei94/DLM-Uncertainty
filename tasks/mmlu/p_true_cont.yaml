@@ -1,0 +1,10 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"
+
+generation_type: continuation
+output_filters: null
+confidence_metrics: p_true_by_continuation
+grader: exact_match

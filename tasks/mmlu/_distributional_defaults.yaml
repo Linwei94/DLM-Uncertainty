@@ -1,0 +1,45 @@
+rounds: 5
+seed: 42
+dataset_name: mmlu # must match the folder name under tasks/
+dataset_path: cais/mmlu
+subset: "all"
+split: test
+few_shot_split: dev
+few_shot_examples: 0
+limit: 200
+results_path: null
+filtered_output_path: null
+graded_outputs_path: null
+# multiple choice: "question: str", "choices : list", and "answer_index: int"
+dataset_preprocessor: task_utils.preprocess_dataset
+
+# placeholder variables must match the dataset column names, formatted using Jinja2
+question_format: "{{ question.strip() }}\n{% for choice in choices %}{{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[loop.index0] }}. {{ choice }}\n{% endfor %}"
+system_prompt: ""
+prompt_formatter: multiple_choice 
+performance_metrics:
+  - accuracy_scalar_with_abstention
+  - dECE
+  - dECE_point_mass
+  - AUROC_point_mass
+  - dAUROC
+
+qa_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 10
+  stop_sequences: [] 
+  temperature: 1
+  max_tokens: 512
+  max_model_len: 2048
+  reasoning_effort: low
+
+
+grader_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  temperature: 0.0
+  max_tokens: 1024
+  max_model_len: 2048
+  reasoning_effort: low

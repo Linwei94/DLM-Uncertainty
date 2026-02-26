@@ -1,0 +1,22 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+ # full prompt formatting template: requires {few_shot_examples} and {formatted_question}
+prompt_format: "{{few_shot_examples}}\n\nAnswer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer. \n\n\
+  {{formatted_question}}\nAnswer: "
+
+generation_type: generation
+output_filters: null
+confidence_metrics: scalar_linguistic_confidence
+grader: llm_grader
+
+
+linguistic_confidence_judge_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 10
+  temperature: 1.2
+  max_tokens: 1024
+  logprobs: 1
+  reasoning_effort: low

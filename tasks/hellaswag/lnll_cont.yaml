@@ -1,0 +1,12 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+#  full prompt formatting template: requires {few_shot_examples} and {formatted_question}
+question_format: "{{ question.strip() }}"
+prompt_format: "{{formatted_question}}" 
+prompt_formatter: task_utils.hella_swag_prompt_formatter
+generation_type: continuation
+output_filters: null
+confidence_metrics: continuation_candidate_normalised_log_likelihood
+grader: exact_match

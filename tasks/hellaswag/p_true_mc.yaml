@@ -1,0 +1,25 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+
+generation_type: generation
+output_filters:
+  - name: regex_extractor
+    args:
+      regexes:
+        - (?i)\bAnswer[:\s]*[\(\[]?\s*([A-D])\s*[\)\]]?
+        - (?i)\b([A-D])\s*is\s*the\s*answer\b
+        - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
+        - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
+        - (?i)\s*([A-D])
+confidence_metrics: p_true_by_monte_carlo_generation
+grader: exact_match
+
+
+p_true_mc_model:
+  backend: ${qa_model.backend}
+  name: ${qa_model.name}
+  repeat: 15
+  temperature: 1.0
+  max_tokens: 1024

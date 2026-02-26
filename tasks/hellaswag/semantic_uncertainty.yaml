@@ -1,0 +1,23 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+# The following are sequential function calls
+prompt_formatter: multiple_choice 
+generation_type: generation
+output_filters:
+  - name: regex_extractor
+    args:
+      regexes:
+        - (?i)\bAnswer[:\s]*[\(\[]?\s*([A-D])\s*[\)\]]?
+        - (?i)\b([A-D])\s*is\s*the\s*answer\b
+        - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
+        - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-D])
+        - (?i)\s*([A-D])
+confidence_metrics: semantic_uncertainty
+grader: exact_match
+
+qa_model:
+  repeat: 10
+  temperature: 1
+  max_tokens: 512

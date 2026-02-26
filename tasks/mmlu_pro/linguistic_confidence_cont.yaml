@@ -1,0 +1,40 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+ # full prompt formatting template: requires {few_shot_examples} and {formatted_question}
+prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"
+
+generation_type: continuation
+output_filters: 
+  - name: regex_extractor
+    args:
+      regexes:
+        - (?i)\bAnswer[:\s]*[\(\[]?\s*([A-J])\s*[\)\]]?
+        - (?i)\b([A-J])\s*is\s*the\s*answer\b
+        - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-J])
+        - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-J])
+        - (?i)\s*([A-J])
+  - name: linguistic_confidence_augmentation
+confidence_metrics: scalar_linguistic_confidence
+grader: exact_match
+
+
+linguistic_confidence_augmentation_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  temperature: 1.5
+  max_tokens: 1024
+  logprobs: 1
+  reasoning_effort: low
+
+
+linguistic_confidence_judge_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 10
+  temperature: 1.5
+  max_tokens: 1024
+  logprobs: 1
+  reasoning_effort: low

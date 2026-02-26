@@ -1,0 +1,23 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+
+prompt_format: |
+  {{few_shot_examples}}
+  
+  Answer the following question using a succinct (at most one sentence) and full answer. If you are uncertain about your answer to the question, convey this uncertainty linguistically by precisely hedging this answer.
+  Question: {{formatted_question}}
+  Answer:
+output_filters: null
+confidence_metrics: scalar_linguistic_confidence
+
+
+linguistic_confidence_judge_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 10
+  temperature: 1.2
+  max_tokens: 1024
+  logprobs: 1
+  reasoning_effort: low

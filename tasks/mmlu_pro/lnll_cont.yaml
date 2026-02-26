@@ -1,0 +1,18 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+prompt_format: "{{few_shot_examples}}\n\n{{formatted_question}}\nAnswer:"  #for continuation
+
+generation_type: continuation
+output_filters:
+  - name: regex_extractor
+    args:
+      regexes:
+        - (?i)\bAnswer[:\s]*[\(\[]?\s*([A-J])\s*[\)\]]?
+        - (?i)\b([A-J])\s*is\s*the\s*answer\b
+        - (?i)\bcorrect\s*answer\s*is:*\s*[\(\[]?\s*([A-J])
+        - (?i)\bbest\s*answer\s*is:*\s*[\(\[]?\s*([A-J])
+        - (?i)\s*([A-J])
+confidence_metrics: continuation_candidate_normalised_log_likelihood
+grader: exact_match

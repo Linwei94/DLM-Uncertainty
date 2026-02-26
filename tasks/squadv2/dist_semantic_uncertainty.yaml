@@ -1,0 +1,10 @@
+defaults:
+  - _distributional_defaults.yaml
+  - _self_
+
+output_filters: null
+confidence_metrics: distributional_semantic_uncertainty
+
+qa_model:
+  repeat: 30
+  temperature: 1

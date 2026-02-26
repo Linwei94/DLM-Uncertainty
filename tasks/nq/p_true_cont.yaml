@@ -1,0 +1,6 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+output_filters: null
+confidence_metrics: p_true_by_continuation

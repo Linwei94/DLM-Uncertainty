@@ -1,0 +1,9 @@
+defaults:
+  - _defaults.yaml
+  - _self_
+
+confidence_metrics: semantic_uncertainty
+
+qa_model:
+  repeat: 10
+  temperature: 0.2

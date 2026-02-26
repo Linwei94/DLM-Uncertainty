@@ -1,0 +1,40 @@
+seed: 42
+dataset_name: mmlu_pro # must match the folder name under tasks/
+dataset_path: TIGER-Lab/MMLU-Pro
+subset: default
+split: test
+few_shot_split: test
+few_shot_examples: 0
+limit: 200
+
+# multiple choice: "question: str", "choices : list", and "answer_index: int"
+dataset_preprocessor: task_utils.preprocess_dataset
+
+# placeholder variables must match the dataset column names, formatted using Jinja2
+question_format: "{{ question.strip() }}\n{% for choice in choices %}{{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[loop.index0] }}. {{ choice }}\n{% endfor %}"
+system_prompt: ""
+prompt_formatter: multiple_choice 
+performance_metrics:
+  - accuracy_scalar_with_abstention
+  - ece_scalar
+  - auroc_scalar
+
+qa_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  stop_sequences: []
+  temperature: 1
+  max_tokens: 1024
+  max_model_len: 2048
+  reasoning_effort: low
+
+
+grader_model:
+  backend: vllm 
+  name: openai/gpt-oss-20b
+  repeat: 1
+  temperature: 0.0
+  max_tokens: 1024
+  logprobs: 1
+  reasoning_effort: low
